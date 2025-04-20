@@ -6,50 +6,69 @@
   <style>
     body { font-family: sans-serif; padding: 2em; }
     h1 { margin-bottom: 1em; }
-    button {
+    select, button {
       margin: 0.5em;
-      padding: 0.75em 1.5em;
+      padding: 0.75em 1em;
       font-size: 1rem;
-      cursor: pointer;
     }
   </style>
 </head>
 <body>
   <h1>Sonos Controller</h1>
 
-  <button onclick="sendCmd('play')">▶️ Play</button>
-  <button onclick="sendCmd('pause')">⏸️ Pause</button>
-  <button onclick="sendCmd('next')">⏭️ Next</button>
-  <button onclick="sendCmd('prev')">⏮️ Previous</button>
-  <button onclick="sendVol('+5')">🔊 Vol +5%</button>
-  <button onclick="sendVol('-5')">🔉 Vol -5%</button>
-  <button onclick="playFavorite('SiriusXM Channel 14')">📻 SiriusXM 14</button>
+  <label for="zoneSelect">Choose Speaker:</label>
+  <select id="zoneSelect">
+    <option>Bathroom Audio (R)</option>
+    <option>Bathroom Audio (L)</option>
+    <option>Bedroom Office Speaker</option>
+    <option>Bedroom TV Speakers</option>
+    <option>Bedroom TV Speakers (RS)</option>
+    <option>Bedroom TV Speakers (LS)</option>
+    <option>Entryway Speaker</option>
+    <option>Kitchen Speakers (L)</option>
+    <option>Kitchen Speakers (R)</option>
+    <option>Living Room TV Speakers</option>
+    <option>Living Room TV Speakers (RS)</option>
+    <option>Living Room TV Speakers (LS)</option>
+    <option>Living Room TV Speakers (Sub)</option>
+    <option>Lounge Speaker</option>
+    <option>Office (Boost)</option>
+  </select>
+
+  <div>
+    <button onclick="sendCmd('play')">▶️ Play</button>
+    <button onclick="sendCmd('pause')">⏸️ Pause</button>
+    <button onclick="sendCmd('next')">⏭️ Next</button>
+    <button onclick="sendCmd('prev')">⏮️ Previous</button>
+    <button onclick="sendVol('+5')">🔊 Vol +5%</button>
+    <button onclick="sendVol('-5')">🔉 Vol -5%</button>
+    <button onclick="playFavorite('SiriusXM Channel 14')">📻 SiriusXM 14</button>
+  </div>
 
   <script>
-    // 1) Sonos HTTP API endpoint (must be running on your LAN)
-    const API_HOST = 'http://192.168.86.29:5005'; 
-    // 2) The exact Sonos zone name (as shown in the Sonos app)
-    const ZONE = 'Lounge Speaker'; 
+    // your sonos-http-api host
+    const API_HOST = 'http://192.168.86.29:5005';
+
+    function getZone() {
+      return document.getElementById('zoneSelect').value;
+    }
 
     function sendCmd(cmd) {
-      fetch(`${API_HOST}/${encodeURIComponent(ZONE)}/${cmd}`)
-        .then(res => res.json())
-        .then(console.log)
-        .catch(console.error);
+      const zone = encodeURIComponent(getZone());
+      fetch(`${API_HOST}/${zone}/${cmd}`)
+        .then(r => r.json()).then(console.log).catch(console.error);
     }
 
     function sendVol(delta) {
-      fetch(`${API_HOST}/${encodeURIComponent(ZONE)}/volume/${delta}`)
-        .then(res => res.json())
-        .then(console.log)
-        .catch(console.error);
+      const zone = encodeURIComponent(getZone());
+      fetch(`${API_HOST}/${zone}/volume/${delta}`)
+        .then(r => r.json()).then(console.log).catch(console.error);
     }
 
     function playFavorite(name) {
-      fetch(`${API_HOST}/${encodeURIComponent(ZONE)}/favorite/${encodeURIComponent(name)}`)
-        .then(res => res.json())
-        .then(console.log)
-        .catch(console.error);
+      const zone = encodeURIComponent(getZone());
+      fetch(`${API_HOST}/${zone}/favorite/${encodeURIComponent(name)}`)
+        .then(r => r.json()).then(console.log).catch(console.error);
     }
   </script>
 </body>

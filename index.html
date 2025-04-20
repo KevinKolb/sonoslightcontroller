@@ -1,1 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Sonos Controller</title>
+  <style>
+    body { font-family: sans-serif; padding: 2em; }
+    h1 { margin-bottom: 1em; }
+    button {
+      margin: 0.5em;
+      padding: 0.75em 1.5em;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Sonos Controller</h1>
 
+  <button onclick="sendCmd('play')">▶️ Play</button>
+  <button onclick="sendCmd('pause')">⏸️ Pause</button>
+  <button onclick="sendCmd('next')">⏭️ Next</button>
+  <button onclick="sendCmd('prev')">⏮️ Previous</button>
+  <button onclick="sendVol('+5')">🔊 Vol +5%</button>
+  <button onclick="sendVol('-5')">🔉 Vol -5%</button>
+  <button onclick="playFavorite('SiriusXM Channel 14')">📻 SiriusXM 14</button>
+
+  <script>
+    // 1) Sonos HTTP API endpoint (must be running on your LAN)
+    const API_HOST = 'http://192.168.86.29:5005'; 
+    // 2) The exact Sonos zone name (as shown in the Sonos app)
+    const ZONE = 'Lounge Speaker'; 
+
+    function sendCmd(cmd) {
+      fetch(`${API_HOST}/${encodeURIComponent(ZONE)}/${cmd}`)
+        .then(res => res.json())
+        .then(console.log)
+        .catch(console.error);
+    }
+
+    function sendVol(delta) {
+      fetch(`${API_HOST}/${encodeURIComponent(ZONE)}/volume/${delta}`)
+        .then(res => res.json())
+        .then(console.log)
+        .catch(console.error);
+    }
+
+    function playFavorite(name) {
+      fetch(`${API_HOST}/${encodeURIComponent(ZONE)}/favorite/${encodeURIComponent(name)}`)
+        .then(res => res.json())
+        .then(console.log)
+        .catch(console.error);
+    }
+  </script>
+</body>
+</html>
